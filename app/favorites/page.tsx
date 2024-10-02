@@ -1,19 +1,30 @@
 'use client';
-import { useState, useEffect } from 'react';
+import useSWR from 'swr';
+import { useEffect } from 'react';
 
 interface Favorite {
   title: string;
   url: string;
-  media_type: string; // Added media_type to handle videos
+  media_type: string;
 }
+const fetchFavorites = () => {
+  if (typeof window !== 'undefined') {
+    return JSON.parse(localStorage.getItem('favorites') || '[]') as Favorite[];
+  }
+  return [];
+};
 
 const Favorites: React.FC = () => {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  // Use SWR to manage fetching favorites
+  const { data: favorites, error, mutate } = useSWR('favorites', fetchFavorites);
 
   useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]') as Favorite[];
-    setFavorites(storedFavorites);
-  }, []);
+    // Mutate the SWR data when the component mounts or localStorage updates
+    mutate();
+  }, [mutate]);
+
+  if (error) return <div>Failed to load favorites</div>;
+  if (!favorites) return <div>Loading favorites...</div>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
@@ -21,7 +32,7 @@ const Favorites: React.FC = () => {
       {favorites.length === 0 ? (
         <p className="text-gray-600 text-center">No favorites yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {favorites.map((fav, index) => (
             <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md">
               {fav.media_type === 'image' ? (
