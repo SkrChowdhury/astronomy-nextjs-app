@@ -1,10 +1,9 @@
-'use client';
-import useSWR from 'swr';
-import { useState, ChangeEvent } from 'react';
-import APOMedia from '../components/APOMedia/APOMedia';
-import APODExplanation from '../components/APODExplanation/APODExplanation';
-import { ApodData } from '../utils/interfaces/ApodData';
-
+"use client";
+import useSWR from "swr";
+import { useState, ChangeEvent } from "react";
+import APOMedia from "../components/APOMedia/APOMedia";
+import APODExplanation from "../components/APODExplanation/APODExplanation";
+import { ApodData } from "../utils/interfaces/ApodData.interface.";
 
 // Fetcher function to be used with SWR for data fetching
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -12,7 +11,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 // Component to add APOD data to localStorage favorites
 const AddToFavoritesButton = ({ apod }: { apod: ApodData }) => {
   const addToFavorites = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
     const newFavorite = {
       title: apod.title,
       url: apod.url,
@@ -20,13 +19,15 @@ const AddToFavoritesButton = ({ apod }: { apod: ApodData }) => {
     };
 
     // Check if the item is already in the favorites list
-    const isFavorite = favorites.some((fav: any) => fav.url === newFavorite.url);
+    const isFavorite = favorites.some(
+      (fav: any) => fav.url === newFavorite.url
+    );
     if (!isFavorite) {
       favorites.push(newFavorite);
-      localStorage.setItem('favorites', JSON.stringify(favorites));
-      alert('Added to favorites!');
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      alert("Added to favorites!");
     } else {
-      alert('Already in favorites!');
+      alert("Already in favorites!");
     }
   };
 
@@ -40,16 +41,16 @@ const AddToFavoritesButton = ({ apod }: { apod: ApodData }) => {
   );
 };
 
-
-
 // Main Explore component with date picker and SWR for fetching APOD
 const Explore: React.FC = () => {
-  const [date, setDate] = useState<string>(''); // State to store the selected date
-  const today = new Date().toISOString().split('T')[0]; // Format today's date in YYYY-MM-DD format
+  const [date, setDate] = useState<string>(""); // State to store the selected date
+  const today = new Date().toISOString().split("T")[0]; // Format today's date in YYYY-MM-DD format
 
   // Fetch APOD data based on selected date using SWR
   const { data, error } = useSWR<ApodData>(
-    date ? `https://api.nasa.gov/planetary/apod?api_key=${process.env.NEXT_PUBLIC_NASA_API_KEY}&date=${date}` : null,
+    date
+      ? `https://api.nasa.gov/planetary/apod?api_key=${process.env.NEXT_PUBLIC_NASA_API_KEY}&date=${date}`
+      : null,
     fetcher
   );
 
@@ -78,7 +79,11 @@ const Explore: React.FC = () => {
       {data && (
         <div>
           {/* Render media (image or video) */}
-          <APOMedia url={data.url} media_type={data.media_type} title={data.title} />
+          <APOMedia
+            url={data.url}
+            media_type={data.media_type}
+            title={data.title}
+          />
 
           {/* Render title and explanation */}
           <APODExplanation title={data.title} explanation={data.explanation} />

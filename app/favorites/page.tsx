@@ -1,25 +1,27 @@
-'use client';
-import useSWR from 'swr';
-import { useEffect } from 'react';
+"use client";
+import useSWR from "swr";
+import { useEffect } from "react";
+import { Favorite } from "../utils/interfaces/Favourite.interface";
+import FavoriteCard from "../components/FavoriteCard/FavoriteCard";
 
-interface Favorite {
-  title: string;
-  url: string;
-  media_type: string;
-}
-const fetchFavorites = () => {
-  if (typeof window !== 'undefined') {
-    return JSON.parse(localStorage.getItem('favorites') || '[]') as Favorite[];
+// Function to fetch favorites from localStorage
+const fetchFavorites = (): Favorite[] => {
+  if (typeof window !== "undefined") {
+    return JSON.parse(localStorage.getItem("favorites") || "[]") as Favorite[];
   }
   return [];
 };
 
+// Main Favorites component to display the list of saved favorites
 const Favorites: React.FC = () => {
-  // Use SWR to manage fetching favorites
-  const { data: favorites, error, mutate } = useSWR('favorites', fetchFavorites);
+  const {
+    data: favorites,
+    error,
+    mutate,
+  } = useSWR("favorites", fetchFavorites);
 
   useEffect(() => {
-    // Mutate the SWR data when the component mounts or localStorage updates
+    // Mutate the SWR data to keep it updated with localStorage
     mutate();
   }, [mutate]);
 
@@ -28,34 +30,18 @@ const Favorites: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
-      <h1 className="text-4xl font-bold text-center mb-6">Your Favorite Images</h1>
+      <h1 className="text-4xl font-bold text-center mb-6">
+        Your Favorite Images
+      </h1>
+
+      {/* Display message if there are no favorites */}
       {favorites.length === 0 ? (
         <p className="text-gray-600 text-center">No favorites yet.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {favorites.map((fav, index) => (
-            <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md">
-              {fav.media_type === 'image' ? (
-                // Render image if it's an image
-                <img
-                  src={fav.url}
-                  alt={fav.title}
-                  className="w-full h-48 object-cover rounded-md mb-2"
-                />
-              ) : (
-                // Render iframe for YouTube video if it's a video
-                <iframe
-                  width="100%"
-                  height="200"
-                  src={fav.url}
-                  title={fav.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="rounded-md mb-2"
-                />
-              )}
-              <h2 className="text-lg font-semibold">{fav.title}</h2>
-            </div>
+          {/* Render each favorite using the FavoriteCard component */}
+          {favorites.map((favorite, index) => (
+            <FavoriteCard key={index} favorite={favorite} />
           ))}
         </div>
       )}
