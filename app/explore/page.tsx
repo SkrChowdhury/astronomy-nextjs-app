@@ -4,6 +4,7 @@ import { useState, ChangeEvent } from "react";
 import APOMedia from "../components/APOMedia/APOMedia";
 import APODExplanation from "../components/APODExplanation/APODExplanation";
 import { ApodData } from "../utils/interfaces/ApodData.interface.";
+import { Favorite } from "../utils/interfaces/Favourite.interface";
 
 // Fetcher function to be used with SWR for data fetching
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -20,7 +21,7 @@ const AddToFavoritesButton = ({ apod }: { apod: ApodData }) => {
 
     // Check if the item is already in the favorites list
     const isFavorite = favorites.some(
-      (fav: any) => fav.url === newFavorite.url
+      (fav: Favorite) => fav.url === newFavorite.url
     );
     if (!isFavorite) {
       favorites.push(newFavorite);
