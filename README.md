@@ -33,7 +33,7 @@ This project is a Next.js app that displays NASA's daily images and allows users
 2. Install dependencies:
 
    ```bash
-   yarn install
+   yarn install or npm install
 3. Create a .env file in the root directory and add the following line:
 
    ```bash
@@ -41,4 +41,4 @@ This project is a Next.js app that displays NASA's daily images and allows users
 4. Run the development server:
 
    ```bash
-   yarn dev
+   yarn dev or npm run dev
